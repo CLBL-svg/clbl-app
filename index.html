@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Asistencia Constructora Leal Barría Limitada</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <!-- SQL.js para base de datos local -->
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/sql-wasm.js"></script>
+
+    <style>
+        /* === VARIABLES DE TEMA === */
+        :root {
+            /* Tema Predeterminado (Actual) */
+            --color-primary: #0000CD;
+            --color-button-bg: #000000;
+            --color-text: #FFFFFF;
+            --color-hover-bg: #FFD700;
+            --color-hover-text: #000000;
+            --color-app-bg: #1a1a1a;
+            --color-dark-bg: #000033;
+            --color-subtle-shadow: #0000CD33;
+            --color-table-border: #0000CD55;
+            --color-card-bg: #1c1c1c;
+            --color-input-bg: #222222;
+        }
+
+        /* Tema Futurista */
+        .theme-futurist {
+            --color-primary: #00ff88;
+            --color-button-bg: #001122;
+            --color-text: #00ffcc;
+            --color-hover-bg: #00ff88;
+            --color-hover-text: #001122;
+            --color-app-bg: #001a33;
+            --color-dark-bg: #000d1a;
+            --color-subtle-shadow: #00ff8833;
+            --color-table-border: #00ff8855;
+            --color-card-bg: #002b4d;
+            --color-input-bg: #003366;
+        }
+
+        /* Tema Retro */
+        .theme-retro {
+            --color-primary: #ff6b35;
+            --color-button-bg: #8b4513;
+            --color-text: #ffd700;
+            --color-hover-bg: #ff8c00;
+            --color-hover-text: #8b0000;
+            --color-app-bg: #2f1b14;
+            --color-dark-bg: #1a0f0b;
+            --color-subtle-shadow: #ff6b3533;
+            --color-table-border: #ff6b3555;
+            --color-card-bg: #3d2818;
+            --color-input-bg: #4a3526;
+        }
+
+        /* Tema Web Moderna */
+        .theme-web {
+            --color-primary: #667eea;
+            --color-button-bg: #764ba2;
+            --color-text: #2d3748;
+            --color-hover-bg: #667eea;
+            --color-hover-text: #ffffff;
+            --color-app-bg: #f7fafc;
+            --color-dark-bg: #4a5568;
+            --color-subtle-shadow: #667eea33;
+            --color-table-border: #cbd5e0;
+            --color-card-bg: #ffffff;
+            --color-input-bg: #ffffff;
+        }
+
+        /* === ESTILOS GENERALES === */
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            margin: 0;
+            background-color: var(--color-dark-bg);
+            color: var(--color-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* Selector de Temas */
+        .theme-selector {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1001;
+            background: var(--color-card-bg);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .theme-options {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--color-text);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+        .theme-default { background: linear-gradient(45deg, #000033, #0000CD); }
+        .theme-futurist-btn { background: linear-gradient(45deg, #001a33, #00ff88); }
+        .theme-retro-btn { background: linear-gradient(45deg, #2f1b14, #ff6b35); }
+        .theme-web-btn { background: linear-gradient(45deg, #4a5568, #667eea); }
+
+        /* Asegurar que todos los títulos y labels usen variables */
+        h1, h2, h3, label, strong, small, p, th, td {
+            color: var(--color-text) !important;
+        }
+
+        /* === Login View === */
+        #login-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--color-dark-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-box {
+            background-color: var(--color-card-bg);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px var(--color-subtle-shadow), 0 0 20px #000;
+            width: 300px;
+            border: 1px solid var(--color-primary);
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--color-text);
+        }
+        .input-group .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-primary);
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+
+        /* === Header y Navegación === */
+        header {
+            width: 100%;
+            background-color: var(--color-dark-bg);
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 0 8px var(--color-subtle-shadow);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        header h1 {
+            color: var(--color-text);
+            margin: 0;
+            font-size: 22px;
+            text-shadow: 0 0 2px var(--color-primary);
+        }
+
+        /* Botón Cerrar Sesión */
+        #logout-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--color-button-bg);
+            color: var(--color-text);
+            padding: 8px 12px;
+            font-size: 14px;
+            margin: 0;
+            border: 1px solid var(--color-text);
+        }
+        #logout-btn:hover {
+            background-color: var(--color-hover-bg);
+            color: var(--color-text);
+            box-shadow: 0 0 8px var(--color-primary);
+        }
+
+        nav {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background-color: var(--color-app-bg);
+            box-shadow: 0 0 6px var(--color-subtle-shadow);
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        nav button {
+            flex: 1;
+            padding: 12px;
+            background: var(--color-button-bg);
+            border: none;
+            color: var(--color-text);
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+            border-bottom: 2px solid transparent;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+        nav button:hover {
+            background-color: var(--color-hover-bg);
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-hover-bg);
+        }
+        nav button.active {
+            background-color: var(--color-button-bg);
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-hover-bg);
+        }
+
+        /* === Contenedor Principal === */
+        #app-container {
+            width: 95%;
+            max-width: 1200px;
+            display: none;
+        }
+        .tab {
+            display: none;
+            padding: 20px;
+            background-color: var(--color-app-bg);
+            border-radius: 8px;
+            border: 1px solid var(--color-table-border);
+            box-shadow: 0 0 5px var(--color-subtle-shadow);
+        }
+        .tab.active {
+            display: block;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid var(--color-table-border);
+            border-radius: 6px;
+            background-color: var(--color-input-bg);
+            color: var(--color-text);
+            transition: box-shadow 0.2s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 5px var(--color-primary);
+        }
+
+        /* === Botones === */
+        button {
+            background-color: var(--color-button-bg);
+            color: var(--color-text);
+            padding: 10px 15px;
+            margin: 5px 5px 5px 0;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 5px var(--color-subtle-shadow);
+            transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--color-text);
+        }
+        button:hover {
+            background-color: var(--color-hover-bg);
+            color: var(--color-text);
+            box-shadow: 0 0 8px var(--color-primary);
+            border: 1px solid var(--color-text);
+        }
+        .btn-danger {
+            background-color: #770000;
+            color: var(--color-text);
+            box-shadow: 0 0 5px #ff4c4c88;
+            border: 1px solid var(--color-text);
+        }
+        .btn-danger:hover {
+            background-color: #990000;
+            color: var(--color-text);
+        }
+        .btn-super-danger {
+            background-color: #990000;
+            border: 2px solid #ff4c4c;
+            color: var(--color-text);
+        }
+        .btn-super-danger:hover {
+            background-color: #cc0000;
+        }
+        .btn-csv {
+            background-color: #1a5e1a;
+            color: #FFFFFF;
+            border: 1px solid #77ff77;
+            padding: 8px 10px;
+            width: auto !important;
+            font-weight: normal;
+        }
+        .btn-csv:hover {
+            background-color: #248824;
+            color: #FFFFFF;
+        }
+        .btn-db {
+            background-color: #2980b9;
+            color: #FFFFFF;
+            border: 1px solid #3498db;
+        }
+        .btn-db:hover {
+            background-color: #3498db;
+            color: #FFFFFF;
+        }
+
+        /* === Lista de Trabajadores === */
+        .worker-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .worker-list-item button {
+            flex-grow: 1;
+            margin: 0;
+            background-color: var(--color-app-bg);
+            border: 1px solid var(--color-table-border);
+            color: var(--color-text);
+            white-space: nowrap;
+        }
+        .worker-list-item > button:first-child {
+            flex-basis: 150px;
+        }
+        .worker-list-item button.active {
+            background-color: var(--color-button-bg);
+            color: var(--color-text);
+            border: 1px solid var(--color-hover-bg);
+        }
+        .worker-list-item button.active:hover {
+            background-color: var(--color-hover-bg);
+        }
+        .worker-list-item button.small-danger {
+            flex-grow: 0;
+            width: 40px;
+            padding: 8px 0;
+            margin-left: 5px;
+            background-color: #770000;
+            border: 1px solid var(--color-text);
+        }
+        .worker-list-item button.small-danger:hover {
+            background-color: #990000;
+            color: var(--color-text);
+        }
+        .download-group {
+            display: flex;
+            gap: 5px;
+            flex-grow: 0;
+        }
+        .download-group .btn-csv {
+            flex-grow: 0;
+        }
+        .worker-list-container button:hover {
+            background-color: var(--color-hover-bg);
+            color: var(--color-text);
+        }
+
+        /* === Tablas === */
+        .record-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+        .record-table th, .record-table td {
+            border: 1px solid var(--color-table-border);
+            padding: 10px;
+            text-align: center;
+        }
+        .record-table th {
+            background-color: var(--color-button-bg);
+            color: var(--color-text);
+        }
+        .record-table td.editable {
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .record-table td.editable:hover {
+            background-color: var(--color-hover-bg);
+            outline: 1px dashed var(--color-hover-bg);
+        }
+        .record-table td.total-hours {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        /* === Tarjetas QR === */
+        #cardContainer, #qr-output {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .qr-card {
+            border: 1px solid var(--color-primary);
+            padding: 15px;
+            background-color: var(--color-card-bg);
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 3px var(--color-subtle-shadow);
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .qr-visual canvas {
+            width: 100px;
+            height: 100px;
+            border: 4px solid #fff;
+            border-radius: 4px;
+            display: block;
+            margin: 10px auto;
+        }
+        .qr-card strong, .qr-card small {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--color-text);
+        }
+
+        /* === Escáner QR Mejorado === */
+        #qr-scanner-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #qr-video-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        #qr-video {
+            width: 100%;
+            height: auto;
+            border: 2px solid var(--color-primary);
+            border-radius: 8px;
+            background-color: #000;
+        }
+        #qr-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+        #qr-frame {
+            width: 70%;
+            height: 70%;
+            border: 3px solid #FFD700;
+            border-radius: 8px;
+            box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
+        }
+        #qr-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .qr-status-scanning {
+            background-color: var(--color-primary);
+            color: #FFFFFF;
+        }
+        .qr-status-success {
+            background-color: #1a5e1a;
+            color: #FFFFFF;
+        }
+        .qr-status-error {
+            background-color: #770000;
+            color: #FFFFFF;
+        }
+
+        /* === Selector de Tipo de Registro === */
+        .event-type-selector {
+            background: var(--color-card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid var(--color-primary);
+        }
+        .event-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .event-btn {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .event-btn.entrada { background-color: #1a5e1a; }
+        .event-btn.salida_colacion { background-color: #d35400; }
+        .event-btn.entrada_colacion { background-color: #2980b9; }
+        .event-btn.salida { background-color: #c0392b; }
+        .event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* === Backup System === */
+        .backup-section {
+            background: var(--color-card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid var(--color-primary);
+        }
+        .backup-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .backup-btn {
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .backup-btn i {
+            font-size: 24px;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Estado Base de Datos */
+        .db-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .db-connected {
+            background-color: #2980b9;
+            color: white;
+        }
+        .db-local {
+            background-color: #d35400;
+            color: white;
+        }
+        .sync-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        .sync-success {
+            background-color: #1a5e1a;
+            color: white;
+        }
+        .sync-error {
+            background-color: #770000;
+            color: white;
+        }
+        .sync-info {
+            background-color: #2980b9;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Selector de Temas -->
+<div class="theme-selector">
+    <div class="theme-options">
+        <div class="theme-btn theme-default" onclick="changeTheme('default')" title="Tema Predeterminado"></div>
+        <div class="theme-btn theme-futurist-btn" onclick="changeTheme('futurist')" title="Tema Futurista"></div>
+        <div class="theme-btn theme-retro-btn" onclick="changeTheme('retro')" title="Tema Retro"></div>
+        <div class="theme-btn theme-web-btn" onclick="changeTheme('web')" title="Tema Web Moderna"></div>
+    </div>
+</div>
+
+<div id="login-view">
+    <div class="login-box">
+        <h2 style="text-align: center; margin-top: 0;">Acceso Administrativo</h2>
+        <p id="login-message" style="text-align: center; margin-bottom: 15px;"></p>
+
+        <div class="input-group">
+            <label for="username">Usuario:</label>
+            <input type="text" id="username" value="" placeholder="Ingrese usuario">
+        </div>
+
+        <div class="input-group">
+            <label for="password">Contraseña:</label>
+            <div class="input-wrapper">
+                <input type="password" id="password" value="" placeholder="Ingrese contraseña">
+                <span class="toggle-password" onclick="togglePasswordVisibility('password')">👁️</span>
+            </div>
+        </div>
+
+        <button style="width: 100%;" onclick="handleLogin()">Acceder</button>
+    </div>
+</div>
+
+<div id="app-container">
+    <header>
+        <h1>Registro de asistencia - Constructora Leal Barría Limitada</h1>
+        <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); display: flex; gap: 10px; align-items: center;">
+            <span id="db-status" class="db-status db-local">⚡ Inicializando BD...</span>
+            <button id="logout-btn" onclick="logout()">🔒 Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="showTab('registro', this)">➕ Trabajador</button>
+        <button class="tab-btn" onclick="showTab('asistencia', this)">⌚ Asistencia</button>
+        <button class="tab-btn" onclick="showTab('registros', this)">📜 Ver Registros</button>
+        <button class="tab-btn" onclick="showTab('tarjetas', this)">🏷️ Tarjetas QR</button>
+        <button class="tab-btn" onclick="showTab('backup', this)">💾 Backup</button>
+        <button class="tab-btn" onclick="showTab('historial', this)">🗑️ Historial</button>
+    </nav>
+
+    <div id="registro" class="tab active">
+        <h2>Gestión de Trabajadores</h2>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button onclick="toggleForm('formulario-registro')">Ingresar Nuevo Trabajador</button>
+            <button onclick="loadWorkersFromDatabase()" class="btn-db">🔄 Cargar desde BD</button>
+        </div>
+
+        <div id="formulario-registro" style="display:block; margin-top: 20px; border: 1px dashed var(--color-table-border); padding: 15px; border-radius: 6px;">
+            <h3>Datos del Nuevo Trabajador</h3>
+            <input type="text" id="workerName" placeholder="Nombre completo" required>
+            <input type="text" id="workerRUT" placeholder="RUT (Ej: 12.345.678-K)" required>
+            <input type="text" id="workerRole" placeholder="Cargo" required>
+            <input type="date" id="workerDate" placeholder="Fecha de ingreso" required>
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button onclick="registerWorker()">Registrar Trabajador (Local)</button>
+                <button onclick="registerWorkerToDatabase()" class="btn-db">💾 Guardar en Base de Datos</button>
+            </div>
+        </div>
+
+        <div id="sync-status" class="sync-status"></div>
+
+        <div id="qr-output">
+            <!-- Tarjetas QR temporales -->
+        </div>
+    </div>
+
+    <div id="asistencia" class="tab">
+        <h2>Registro de Asistencia</h2>
+
+        <h3>Registro Manual (Selección por nombre)</h3>
+        <select id="selectWorkerManual">
+            <option value="">-- Seleccionar Trabajador --</option>
+        </select>
+        <select id="eventType">
+            <option value="entrada">Entrada</option> 
+            <option value="salida_colacion">Salida a Colación</option>
+            <option value="entrada_colacion">Retorno de Colación</option>
+            <option value="salida">Salida</option>
+        </select>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button onclick="registerAttendanceManual()">Registrar Hora Actual (Local)</button>
+            <button onclick="registerAttendanceToDatabase()" class="btn-db">💾 Guardar en Base de Datos</button>
+        </div>
+        
+        <p id="manual-message" style="margin-top: 10px;"></p>
+
+        <h3 style="margin-top: 30px;">Registro por Código QR</h3>
+        
+        <div id="quick-scan-container">
+            <p style="font-size: 0.9em; color: #aaa; margin-bottom: 10px;">
+                Seleccione el tipo de registro y luego escanee el código QR.
+            </p>
+            
+            <!-- Selector de Tipo de Evento -->
+            <div class="event-type-selector">
+                <h4>Seleccione el tipo de registro:</h4>
+                <div class="event-buttons">
+                    <button class="event-btn entrada" onclick="selectEventType('entrada')">🟢 Entrada</button>
+                    <button class="event-btn salida_colacion" onclick="selectEventType('salida_colacion')">🟠 Salida Colación</button>
+                    <button class="event-btn entrada_colacion" onclick="selectEventType('entrada_colacion')">🔵 Retorno Colación</button>
+                    <button class="event-btn salida" onclick="selectEventType('salida')">🔴 Salida</button>
+                </div>
+                <p id="selected-event" style="margin-top: 10px; font-weight: bold; text-align: center;">
+                    Tipo seleccionado: <span id="current-event">Ninguno</span>
+                </p>
+            </div>
+            
+            <div id="qr-scanner-container">
+                <button id="start-scanner-btn" onclick="startQRScanner()">📷 Activar Escáner QR</button>
+                <button id="stop-scanner-btn" onclick="stopQRScanner()" style="display: none;">⏹️ Detener Escáner</button>
+                
+                <div id="qr-video-container" style="display: none;">
+                    <video id="qr-video" playsinline></video>
+                    <div id="qr-overlay">
+                        <div id="qr-frame"></div>
+                    </div>
+                </div>
+                
+                <div id="qr-status" class="qr-status-scanning" style="display: none;">
+                    Escaneando...
+                </div>
+            </div>
+            
+            <p id="qr-message" style="margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <div id="registros" class="tab">
+        <h2>Registros de Asistencia por Trabajador</h2>
+        
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 350px;">
+                <h3>Lista de Trabajadores y Acciones</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button onclick="loadAttendanceFromDatabase()" class="btn-db">🔄 Cargar Asistencias desde BD</button>
+                </div>
+                <div id="workerButtons" class="worker-list-container">
+                    <!-- Lista de trabajadores -->
+                </div>
+            </div>
+            <div style="flex: 2; min-width: 450px;">
+                <h3 id="recordsTitle">Registro Detallado (Seleccione un trabajador)</h3>
+                <p style="font-size: 0.9em; color: #FFD700;">
+                    💡 Haga clic en cualquier hora registrada en la tabla para corregirla o borrarla.
+                </p>
+                <div id="recordTableContainer">
+                    <!-- Tabla de registros -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="tarjetas" class="tab">
+        <h2>Tarjetas QR Generadas (Imprimibles)</h2>
+        <p style="color: #aaa; margin-bottom: 20px;">Cada tarjeta contiene el nombre, RUT y un código QR único para el registro de asistencia.</p>
+        <div id="cardContainer">
+            <!-- Tarjetas QR -->
+        </div>
+    </div>
+
+    <div id="backup" class="tab">
+        <h2>Sistema de Backup y Respaldo</h2>
+        
+        <div class="backup-section">
+            <h3>🔒 Respaldo de Datos</h3>
+            <p>Realice respaldos periódicos para proteger la información de trabajadores y asistencias.</p>
+            
+            <div class="backup-options">
+                <button class="backup-btn" onclick="createBackup('device')">
+                    <span>📱</span>
+                    <strong>Guardar en Dispositivo</strong>
+                    <small>Descarga archivo JSON</small>
+                </button>
+                
+                <button class="backup-btn" onclick="createBackup('email')">
+                    <span>📧</span>
+                    <strong>Enviar por Email</strong>
+                    <small>Abre cliente de correo</small>
+                </button>
+                
+                <button class="backup-btn" onclick="createBackup('print')">
+                    <span>🖨️</span>
+                    <strong>Imprimir Resumen</strong>
+                    <small>Versión para impresión</small>
+                </button>
+                
+                <button class="backup-btn" onclick="restoreBackup()">
+                    <span>🔄</span>
+                    <strong>Restaurar Backup</strong>
+                    <small>Cargar desde archivo</small>
+                </button>
+
+                <button class="backup-btn btn-db" onclick="exportDatabase()">
+                    <span>💾</span>
+                    <strong>Exportar BD SQLite</strong>
+                    <small>Archivo .sqlite completo</small>
+                </button>
+
+                <button class="backup-btn btn-db" onclick="importDatabase()">
+                    <span>📥</span>
+                    <strong>Importar BD SQLite</strong>
+                    <small>Cargar archivo .sqlite</small>
+                </button>
+            </div>
+        </div>
+
+        <div class="backup-section">
+            <h3>📊 Resumen de Datos</h3>
+            <div id="backup-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                <!-- Las estadísticas se generan dinámicamente -->
+            </div>
+        </div>
+
+        <div class="backup-section">
+            <h3>⚙️ Configuración Automática</h3>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <button onclick="scheduleWeeklyBackup()" class="btn-csv">
+                    📅 Programar Backup Semanal
+                </button>
+                <button onclick="exportAllData()" class="btn-csv">
+                    📥 Exportar Todos los Datos
+                </button>
+                <button onclick="clearOldData()" class="btn-danger">
+                    🗑️ Limpiar Datos Antiguos
+                </button>
+                <button onclick="syncAllWithDatabase()" class="btn-db">
+                    🔄 Sincronizar BD Completa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="historial" class="tab">
+        <h2>Historial de Trabajadores Eliminados</h2>
+        
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+                <h3>Trabajadores Eliminados</h3>
+                <div id="historicalButtons" class="worker-list-container">
+                    <!-- Lista histórica -->
+                </div>
+            </div>
+            <div style="flex: 3; min-width: 350px;">
+                <h3 id="historicalRecordsTitle">Registro Histórico Detallado</h3>
+                <div id="historicalRecordTableContainer">
+                    <!-- Tabla histórica -->
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 40px; text-align: center;">
+            <button class="btn-super-danger" onclick="clearAllRecords()">
+                🚨 BORRAR TODOS LOS REGISTROS (Trabajadores y Historial) 🚨
+            </button>
+            <p style="font-size: 0.8em; color: #ff9999; margin-top: 10px;">
+                Esta acción es irreversible y eliminará todos los datos de asistencia y trabajadores almacenados en su navegador.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== BASE DE DATOS SQL.js (100% GRATIS) ==========
+    let db = null;
+    let SQL = null;
+
+    // Inicializar base de datos SQLite en el navegador
+    async function initializeDatabase() {
+        try {
+            // Cargar SQL.js
+            SQL = await initSqlJs({
+                locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/${file}`
+            });
+            
+            // Crear o cargar base de datos
+            const dbData = localStorage.getItem('clbl_sqlite_db');
+            
+            if (dbData) {
+                // Cargar base de datos existente
+                const uint8Array = new Uint8Array(JSON.parse(dbData));
+                db = new SQL.Database(uint8Array);
+                updateDBStatus('🟢 BD SQLite Activa');
+                console.log('✅ Base de datos SQLite cargada desde localStorage');
+            } else {
+                // Crear nueva base de datos
+                db = new SQL.Database();
+                createTables();
+                updateDBStatus('🟢 Nueva BD SQLite');
+                console.log('✅ Nueva base de datos SQLite creada');
+            }
+            
+        } catch (error) {
+            console.error('Error inicializando base de datos:', error);
+            // Fallback a localStorage
+            db = null;
+            updateDBStatus('⚡ Solo LocalStorage');
+        }
+    }
+
+    // Crear tablas si no existen
+    function createTables() {
+        if (!db) return;
+        
+        // Tabla de trabajadores
+        db.run(`
+            CREATE TABLE IF NOT EXISTS workers (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                rut TEXT NOT NULL,
+                role TEXT NOT NULL,
+                start_date TEXT NOT NULL,
+                active BOOLEAN DEFAULT true,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        
+        // Tabla de asistencias
+        db.run(`
+            CREATE TABLE IF NOT EXISTS attendance (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                worker_id TEXT NOT NULL,
+                worker_name TEXT NOT NULL,
+                date TEXT NOT NULL,
+                time TEXT NOT NULL,
+                type TEXT NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        
+        // Índices para mejor rendimiento
+        db.run('CREATE INDEX IF NOT EXISTS idx_attendance_worker_date ON attendance(worker_id, date)');
+        db.run('CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date)');
+        
+        saveDatabase();
+    }
+
+    // Guardar base de datos en localStorage
+    function saveDatabase() {
+        if (!db) return;
+        
+        const data = db.export();
+        const uint8Array = new Uint8Array(data);
+        localStorage.setItem('clbl_sqlite_db', JSON.stringify(Array.from(uint8Array)));
+    }
+
+    // Actualizar estado de la BD en la UI
+    function updateDBStatus(message) {
+        const statusEl = document.getElementById('db-status');
+        if (db) {
+            statusEl.textContent = message || '🟢 BD SQLite Local';
+            statusEl.className = 'db-status db-connected';
+        } else {
+            statusEl.textContent = '⚡ Solo LocalStorage';
+            statusEl.className = 'db-status db-local';
+        }
+    }
+
+    // ========== FUNCIONES DE BASE DE DATOS ==========
+
+    // Guardar trabajador en SQLite
+    async function registerWorkerToDatabase() {
+        const name = document.getElementById("workerName").value.trim();
+        const rut = document.getElementById("workerRUT").value.trim();
+        const role = document.getElementById("workerRole").value.trim();
+        const date = document.getElementById("workerDate").value.trim();
+        const id = getCleanID(rut);
+
+        if (!name || !rut || !role || !date) {
+            alert("❌ Por favor, complete todos los campos de registro.");
+            return;
+        }
+
+        try {
+            if (db) {
+                // Guardar en SQLite
+                db.run(
+                    `INSERT OR REPLACE INTO workers (id, name, rut, role, start_date, active) 
+                     VALUES (?, ?, ?, ?, ?, true)`,
+                    [id, name, rut, role, date]
+                );
+                saveDatabase();
+                showSyncStatus('✅ Trabajador guardado en base de datos local', 'success');
+            } else {
+                // Fallback a localStorage
+                showSyncStatus('✅ Trabajador guardado (localStorage)', 'success');
+            }
+
+            // Siempre guardar en el estado local de la app
+            appState.workers[id] = { name, rut, role, date };
+            saveData();
+            refreshUILists();
+
+        } catch (error) {
+            console.error('Error al guardar trabajador:', error);
+            showSyncStatus('❌ Error al guardar: ' + error.message, 'error');
+        }
+    }
+
+    // Guardar asistencia en SQLite
+    async function registerAttendanceToDatabase() {
+        const workerId = document.getElementById("selectWorkerManual").value;
+        const eventType = document.getElementById("eventType").value;
+
+        if (!workerId) {
+            alert('🚫 Por favor, seleccione un trabajador.');
+            return;
+        }
+
+        const worker = appState.workers[workerId];
+        if (!worker) {
+            alert('🚫 Trabajador no encontrado.');
+            return;
+        }
+
+        const now = new Date();
+        const date = now.toISOString().split("T")[0];
+        const time = now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+
+        try {
+            if (db) {
+                // Guardar en SQLite
+                db.run(
+                    `INSERT INTO attendance (worker_id, worker_name, date, time, type, timestamp) 
+                     VALUES (?, ?, ?, ?, ?, ?)`,
+                    [workerId, worker.name, date, time, eventType, now.toISOString()]
+                );
+                saveDatabase();
+                showSyncStatus('✅ Asistencia guardada en base de datos', 'success');
+            } else {
+                showSyncStatus('✅ Asistencia guardada (localStorage)', 'success');
+            }
+
+            // Guardar en estado local
+            if (!appState.attendance[workerId]) appState.attendance[workerId] = {};
+            if (!appState.attendance[workerId][date]) appState.attendance[workerId][date] = {};
+            appState.attendance[workerId][date][eventType] = time;
+            saveData();
+
+        } catch (error) {
+            console.error('Error al guardar asistencia:', error);
+            showSyncStatus('❌ Error al guardar: ' + error.message, 'error');
+        }
+    }
+
+    // Cargar trabajadores desde SQLite
+    async function loadWorkersFromDatabase() {
+        try {
+            if (db) {
+                const stmt = db.prepare('SELECT * FROM workers WHERE active = true ORDER BY name');
+                const workers = [];
+                
+                while (stmt.step()) {
+                    workers.push(stmt.getAsObject());
+                }
+                stmt.free();
+
+                // Sincronizar con estado local
+                appState.workers = {};
+                workers.forEach(worker => {
+                    appState.workers[worker.id] = {
+                        name: worker.name,
+                        rut: worker.rut,
+                        role: worker.role,
+                        date: worker.start_date
+                    };
+                });
+
+                saveData();
+                refreshUILists();
+                renderAllQRCard();
+                showSyncStatus(`✅ ${workers.length} trabajadores cargados desde BD`, 'success');
+            } else {
+                showSyncStatus('ℹ️ Usando datos locales existentes', 'info');
+            }
+            
+        } catch (error) {
+            console.error('Error al cargar trabajadores:', error);
+            showSyncStatus('❌ Error al cargar: ' + error.message, 'error');
+        }
+    }
+
+    // Cargar asistencias desde SQLite
+    async function loadAttendanceFromDatabase() {
+        try {
+            if (db) {
+                const stmt = db.prepare(`
+                    SELECT worker_id, date, time, type 
+                    FROM attendance 
+                    ORDER BY date DESC, time DESC
+                `);
+                
+                const records = [];
+                while (stmt.step()) {
+                    records.push(stmt.getAsObject());
+                }
+                stmt.free();
+
+                // Procesar asistencias
+                appState.attendance = {};
+                records.forEach(record => {
+                    const workerId = record.worker_id;
+                    const date = record.date;
+                    const type = record.type;
+                    const time = record.time;
+
+                    if (!appState.attendance[workerId]) appState.attendance[workerId] = {};
+                    if (!appState.attendance[workerId][date]) appState.attendance[workerId][date] = {};
+                    
+                    appState.attendance[workerId][date][type] = time;
+                });
+
+                saveData();
+                refreshUILists();
+                showSyncStatus(`✅ ${records.length} registros cargados desde BD`, 'success');
+            } else {
+                showSyncStatus('ℹ️ Usando asistencias locales existentes', 'info');
+            }
+            
+        } catch (error) {
+            console.error('Error al cargar asistencias:', error);
+            showSyncStatus('❌ Error al cargar: ' + error.message, 'error');
+        }
+    }
+
+    // Sincronizar todos los datos
+    async function syncAllWithDatabase() {
+        try {
+            showSyncStatus('🔄 Sincronizando con base de datos...', 'info');
+            await loadWorkersFromDatabase();
+            await loadAttendanceFromDatabase();
+            showSyncStatus('✅ Sincronización completa con base de datos', 'success');
+        } catch (error) {
+            showSyncStatus('❌ Error en sincronización: ' + error.message, 'error');
+        }
+    }
+
+    // Exportar base de datos completa
+    function exportDatabase() {
+        if (db) {
+            const data = db.export();
+            const uint8Array = new Uint8Array(data);
+            const blob = new Blob([uint8Array], { type: 'application/octet-stream' });
+            
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `backup_clbl_${new Date().toISOString().split('T')[0]}.sqlite`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showSyncStatus('✅ Base de datos exportada como archivo SQLite', 'success');
+        } else {
+            createBackup('device');
+        }
+    }
+
+    // Importar base de datos
+    function importDatabase() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.sqlite';
+        input.onchange = async e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = async event => {
+                try {
+                    if (!SQL) {
+                        await initializeDatabase();
+                    }
+                    
+                    const uint8Array = new Uint8Array(event.target.result);
+                    db = new SQL.Database(uint8Array);
+                    
+                    // Verificar que tenga las tablas correctas
+                    try {
+                        db.exec('SELECT 1 FROM workers LIMIT 1');
+                        db.exec('SELECT 1 FROM attendance LIMIT 1');
+                    } catch (error) {
+                        throw new Error('El archivo no es una base de datos válida de CLBL');
+                    }
+                    
+                    saveDatabase();
+                    updateDBStatus('🟢 BD SQLite Importada');
+                    
+                    // Recargar datos
+                    await loadWorkersFromDatabase();
+                    await loadAttendanceFromDatabase();
+                    
+                    showSyncStatus('✅ Base de datos importada correctamente', 'success');
+                    
+                } catch (error) {
+                    showSyncStatus('❌ Error al importar base de datos: ' + error.message, 'error');
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        };
+        input.click();
+    }
+
+    // Mostrar estado de sincronización
+    function showSyncStatus(message, type) {
+        const statusEl = document.getElementById('sync-status');
+        statusEl.textContent = message;
+        statusEl.className = 'sync-status';
+        statusEl.style.display = 'block';
+        
+        if (type === 'success') {
+            statusEl.classList.add('sync-success');
+        } else if (type === 'error') {
+            statusEl.classList.add('sync-error');
+        } else if (type === 'info') {
+            statusEl.classList.add('sync-info');
+        }
+        
+        setTimeout(() => {
+            statusEl.style.display = 'none';
+        }, 5000);
+    }
+
+    // ========== CÓDIGO ORIGINAL CON CORRECCIONES DE PERSISTENCIA ==========
+    // --- Configuración y Constantes ---
+    const USERNAME = 'CLBL';
+    const PASSWORD = 'clbl1984';
+    const DATA_KEY = 'clbl_attendance_data';
+    const HISTORY_KEY = 'clbl_history_data';
+    const SETTINGS_KEY = 'clbl_settings';
+
+    let appState = {
+        workers: {},
+        attendance: {},
+        deletedWorkers: {},
+        currentSelectedId: null,
+    };
+
+    let settings = {
+        theme: 'default',
+        selectedEventType: null,
+        lastBackup: null
+    };
+
+    // Variables para el escáner QR
+    let qrScannerActive = false;
+    let qrVideoStream = null;
+    let qrScanningInterval = null;
+
+    // --- Sistema de Temas ---
+    function changeTheme(themeName) {
+        document.body.className = '';
+        if (themeName !== 'default') {
+            document.body.classList.add(`theme-${themeName}`);
+        }
+        settings.theme = themeName;
+        saveSettings();
+    }
+
+    function loadSettings() {
+        const stored = localStorage.getItem(SETTINGS_KEY);
+        if (stored) {
+            settings = { ...settings, ...JSON.parse(stored) };
+            changeTheme(settings.theme);
+        }
+    }
+
+    function saveSettings() {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    // --- Sistema de Selección de Eventos para QR ---
+    function selectEventType(eventType) {
+        settings.selectedEventType = eventType;
+        saveSettings();
+        
+        const eventNames = {
+            'entrada': 'Entrada',
+            'salida_colacion': 'Salida a Colación', 
+            'entrada_colacion': 'Retorno de Colación',
+            'salida': 'Salida'
+        };
+        
+        document.getElementById('current-event').textContent = eventNames[eventType];
+        document.getElementById('qr-message').textContent = `✅ Listo para registrar ${eventNames[eventType]}. Active el escáner QR.`;
+    }
+
+    // --- CORRECCIÓN ESPECÍFICA: FUNCIONES DE VISUALIZACIÓN DE REGISTROS ---
+    function showRecords(id) {
+        console.log("📊 Mostrando registros para:", id);
+        appState.currentSelectedId = id;
+        
+        const worker = appState.workers[id];
+        if (!worker) {
+            console.error("❌ Trabajador no encontrado:", id);
+            document.getElementById('recordsTitle').textContent = 'Registro Detallado (Seleccione un trabajador)';
+            document.getElementById('recordTableContainer').innerHTML = '<p style="color: #aaa; text-align: center; padding: 20px;">Trabajador no encontrado</p>';
+            return;
+        }
+        
+        console.log("✅ Trabajador encontrado:", worker.name);
+        renderAttendanceTable(id, false);
+    }
+
+    function renderAttendanceTable(id, isHistory) {
+        console.log("🎯 Renderizando tabla para:", id, "Historial:", isHistory);
+        
+        const targetState = isHistory ? appState.deletedWorkers : appState.workers;
+        const targetAttendance = isHistory ? targetState[id]?.attendance || {} : appState.attendance[id] || {};
+        const workerInfo = isHistory ? targetState[id]?.worker : targetState[id];
+        
+        const recordsTitleEl = document.getElementById(isHistory ? 'historicalRecordsTitle' : 'recordsTitle');
+        const tableContainerEl = document.getElementById(isHistory ? 'historicalRecordTableContainer' : 'recordTableContainer');
+
+        if (!workerInfo) {
+            console.error("❌ Información de trabajador no disponible:", id);
+            tableContainerEl.innerHTML = '<p style="color: #aaa; text-align: center; padding: 20px;">Trabajador no encontrado en los registros</p>';
+            recordsTitleEl.textContent = 'Registro Detallado (Seleccione un trabajador)';
+            return;
+        }
+        
+        // Actualizar título
+        recordsTitleEl.textContent = `Registros de Asistencia para ${workerInfo.name}`;
+        console.log("📋 Registros encontrados:", Object.keys(targetAttendance).length);
+
+        let html = `<table class="record-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Entrada</th>
+                    <th>Salida Colación</th>
+                    <th>Retorno Colación</th>
+                    <th>Salida</th>
+                    <th>Total Horas</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        const dates = Object.keys(targetAttendance).sort().reverse();
+        
+        if (dates.length === 0) {
+            html += `<tr><td colspan="6" style="text-align: center; color: #aaa; padding: 20px;">No hay registros de asistencia para este trabajador</td></tr>`;
+        } else {
+            dates.forEach(date => {
+                const rec = targetAttendance[date];
+                console.log("📅 Procesando fecha:", date, "Registro:", rec);
+                
+                // Calcular horas totales si no existe
+                if (!rec.total_hours) {
+                    rec.total_hours = calculateTotalHours(rec);
+                }
+                
+                const totalHours = rec.total_hours || '-'; 
+
+                const editableAttr = isHistory ? '' : 'class="editable" title="Click para corregir"';
+                const onClick = (type) => isHistory ? '' : `onclick="editRecord('${id}', '${date}', '${type}')"`;
+                
+                html += `<tr>
+                    <td>${date}</td>
+                    <td ${editableAttr} ${onClick('entrada')}>${rec.entrada || '-'}</td>
+                    <td ${editableAttr} ${onClick('salida_colacion')}>${rec.salida_colacion || '-'}</td>
+                    <td ${editableAttr} ${onClick('entrada_colacion')}>${rec.entrada_colacion || '-'}</td>
+                    <td ${editableAttr} ${onClick('salida')}>${rec.salida || '-'}</td>
+                    <td class="total-hours">${totalHours}</td>
+                </tr>`;
+            });
+        }
+
+        html += `</tbody></table>`;
+        tableContainerEl.innerHTML = html;
+        
+        console.log("✅ Tabla renderizada exitosamente");
+    }
+
+    function refreshWorkerButtons(data, containerElement, clickHandler, isHistory = false) {
+        console.log("🔄 Actualizando botones de trabajadores. Total:", Object.keys(data).length);
+        
+        containerElement.innerHTML = '';
+        const workerArray = Object.values(data).map(item => ({
+            worker: item.worker || item,
+            id: getCleanID(item.worker ? item.worker.rut : item.rut)
+        })).sort((a, b) => a.worker.name.localeCompare(b.worker.name));
+        
+        if (workerArray.length === 0) {
+            const message = isHistory ? 
+                '<p style="font-size: 0.9em; color: #aaa; text-align: center; padding: 10px;">No hay registros eliminados.</p>' :
+                '<p style="font-size: 0.9em; color: #aaa; text-align: center; padding: 10px;">No hay trabajadores activos.</p>';
+            containerElement.innerHTML = message;
+            return;
+        }
+
+        workerArray.forEach(item => {
+            const workerId = item.id;
+            const workerName = item.worker.name;
+            
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "worker-list-item";
+            
+            // 1. Botón de Nombre (para ver registros)
+            const nameBtn = document.createElement("button");
+            nameBtn.textContent = workerName;
+            nameBtn.onclick = () => {
+                console.log("👤 Click en trabajador:", workerName, "ID:", workerId);
+                // Remover clase 'active' de todos los botones de nombre
+                containerElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                // Agregar clase 'active' al botón de nombre seleccionado
+                nameBtn.classList.add('active');
+                clickHandler(workerId);
+            };
+            itemDiv.appendChild(nameBtn);
+            
+            if (!isHistory) {
+                // Agrupador para los botones de descarga (CSV)
+                const downloadGroup = document.createElement("div");
+                downloadGroup.className = "download-group";
+
+                const periods = [
+                    { label: 'D', value: 'daily', title: 'Descargar CSV Diario' },
+                    { label: 'S', value: 'weekly', title: 'Descargar CSV Semanal' },
+                    { label: 'M', value: 'monthly', title: 'Descargar CSV Mensual' }
+                ];
+                
+                periods.forEach(p => {
+                    const csvBtn = document.createElement("button");
+                    csvBtn.className = "btn-csv";
+                    csvBtn.textContent = p.label;
+                    csvBtn.title = p.title; 
+                    csvBtn.onclick = () => exportCSV(workerId, p.value);
+                    downloadGroup.appendChild(csvBtn);
+                });
+
+                itemDiv.appendChild(downloadGroup);
+            }
+            
+            // 3. Botón de Eliminar (Individual)
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "small-danger";
+            deleteBtn.textContent = "🗑️";
+            
+            if (isHistory) {
+                // Eliminar registro histórico
+                deleteBtn.onclick = () => promptDeleteHistoricalRecord(workerId, workerName);
+            } else {
+                // Eliminar trabajador activo (Mover a historial)
+                deleteBtn.onclick = () => promptDeleteWorker(workerId);
+            }
+            itemDiv.appendChild(deleteBtn);
+            
+            containerElement.appendChild(itemDiv);
+        });
+        
+        console.log("✅ Botones de trabajadores actualizados");
+    }
+
+    // --- Sistema de Backup Mejorado ---
+    function createBackup(type) {
+        const now = new Date();
+        const timestamp = now.toISOString().split('T')[0];
+        const backupData = {
+            workers: appState.workers,
+            attendance: appState.attendance,
+            deletedWorkers: appState.deletedWorkers,
+            backupDate: now.toISOString(),
+            version: '1.0'
+        };
+
+        const jsonData = JSON.stringify(backupData, null, 2);
+        const filename = `backup_clbl_${timestamp}.json`;
+
+        switch(type) {
+            case 'device':
+                // Descargar archivo
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                alert('✅ Backup descargado correctamente.');
+                break;
+
+            case 'email':
+                // Enviar por email
+                const subject = `Backup CLBL ${timestamp}`;
+                const body = `Adjunto backup de la aplicación de asistencia.\n\nFecha: ${timestamp}\nTotal trabajadores: ${Object.keys(appState.workers).length}`;
+                const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoLink;
+                break;
+
+            case 'print':
+                // Versión para imprimir
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Backup CLBL ${timestamp}</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; margin: 20px; }
+                                .section { margin-bottom: 30px; }
+                                table { width: 100%; border-collapse: collapse; }
+                                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                                th { background-color: #f2f2f2; }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Backup Constructora Leal Barría</h1>
+                            <p><strong>Fecha:</strong> ${timestamp}</p>
+                            
+                            <div class="section">
+                                <h2>Resumen</h2>
+                                <p>Trabajadores activos: ${Object.keys(appState.workers).length}</p>
+                                <p>Registros históricos: ${Object.keys(appState.deletedWorkers).length}</p>
+                            </div>
+                            
+                            <div class="section">
+                                <h2>Trabajadores Activos</h2>
+                                <table>
+                                    <tr><th>Nombre</th><th>RUT</th><th>Cargo</th></tr>
+                                    ${Object.values(appState.workers).map(worker => 
+                                        `<tr><td>${worker.name}</td><td>${worker.rut}</td><td>${worker.role}</td></tr>`
+                                    ).join('')}
+                                </table>
+                            </div>
+                        </body>
+                    </html>
+                `);
+                printWindow.print();
+                break;
+        }
+
+        settings.lastBackup = now.toISOString();
+        saveSettings();
+        updateBackupStats();
+    }
+
+    function restoreBackup() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = event => {
+                try {
+                    const backupData = JSON.parse(event.target.result);
+                    
+                    if (confirm('¿Está seguro de restaurar este backup? Se sobrescribirán los datos actuales.')) {
+                        appState.workers = backupData.workers || {};
+                        appState.attendance = backupData.attendance || {};
+                        appState.deletedWorkers = backupData.deletedWorkers || {};
+                        
+                        saveData();
+                        refreshUILists();
+                        renderAllQRCard();
+                        updateBackupStats();
+                        
+                        alert('✅ Backup restaurado correctamente.');
+                    }
+                } catch (error) {
+                    alert('❌ Error: El archivo de backup no es válido.');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    function updateBackupStats() {
+        const statsContainer = document.getElementById('backup-stats');
+        if (!statsContainer) return;
+
+        const totalWorkers = Object.keys(appState.workers).length;
+        const totalHistorical = Object.keys(appState.deletedWorkers).length;
+        let totalRecords = 0;
+        
+        Object.values(appState.attendance).forEach(workerAttendance => {
+            totalRecords += Object.keys(workerAttendance).length;
+        });
+
+        const lastBackupText = settings.lastBackup 
+            ? new Date(settings.lastBackup).toLocaleDateString('es-CL')
+            : 'Nunca';
+
+        statsContainer.innerHTML = `
+            <div style="background: var(--color-card-bg); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 24px; font-weight: bold;">${totalWorkers}</div>
+                <div>Trabajadores Activos</div>
+            </div>
+            <div style="background: var(--color-card-bg); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 24px; font-weight: bold;">${totalRecords}</div>
+                <div>Registros de Asistencia</div>
+            </div>
+            <div style="background: var(--color-card-bg); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 24px; font-weight: bold;">${totalHistorical}</div>
+                <div>Historial Eliminados</div>
+            </div>
+            <div style="background: var(--color-card-bg); padding: 15px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 24px; font-weight: bold;">${lastBackupText}</div>
+                <div>Último Backup</div>
+            </div>
+        `;
+    }
+
+    function scheduleWeeklyBackup() {
+        if (confirm('¿Programar backup automático semanal? Se creará un backup cada lunes a las 9:00 AM.')) {
+            alert('✅ Backup semanal programado (simulación). En una versión futura esto se implementará completamente.');
+        }
+    }
+
+    function exportAllData() {
+        createBackup('device');
+    }
+
+    function clearOldData() {
+        const cutoffDate = new Date();
+        cutoffDate.setMonth(cutoffDate.getMonth() - 3); // 3 meses atrás
+        
+        let deletedCount = 0;
+        
+        Object.keys(appState.deletedWorkers).forEach(workerId => {
+            const deletedDate = new Date(appState.deletedWorkers[workerId].deletedDate);
+            if (deletedDate < cutoffDate) {
+                delete appState.deletedWorkers[workerId];
+                deletedCount++;
+            }
+        });
+
+        if (deletedCount > 0) {
+            saveData();
+            refreshUILists();
+            alert(`✅ Se eliminaron ${deletedCount} registros históricos antiguos.`);
+        } else {
+            alert('ℹ️ No se encontraron registros antiguos para eliminar.');
+        }
+    }
+
+    // --- GESTIÓN DE DATOS MEJORADA CON PERSISTENCIA ---
+    function loadData() {
+        try {
+            console.log("🔄 Cargando datos desde localStorage...");
+            
+            const storedData = localStorage.getItem(DATA_KEY);
+            const storedHistory = localStorage.getItem(HISTORY_KEY);
+            
+            if (storedData) {
+                console.log("📁 Datos encontrados en localStorage");
+                const data = JSON.parse(storedData);
+                appState.workers = data.workers || {};
+                appState.attendance = data.attendance || {};
+                console.log(`✅ Cargados ${Object.keys(appState.workers).length} trabajadores y ${Object.keys(appState.attendance).length} registros de asistencia`);
+            } else {
+                console.log("ℹ️ No hay datos guardados, iniciando con datos vacíos");
+                appState.workers = {};
+                appState.attendance = {};
+            }
+            
+            if (storedHistory) {
+                appState.deletedWorkers = JSON.parse(storedHistory) || {};
+                console.log(`✅ Cargados ${Object.keys(appState.deletedWorkers).length} registros históricos`);
+            } else {
+                appState.deletedWorkers = {};
+            }
+            
+            // Actualizar la interfaz de usuario
+            refreshUILists();
+            renderAllQRCard();
+            updateBackupStats();
+            
+            console.log("🎉 Datos cargados exitosamente");
+            
+        } catch (e) {
+            console.error("❌ Error al cargar datos:", e);
+            alert('⚠️ Error al cargar datos guardados. Se iniciará con datos vacíos.');
+        }
+    }
+
+    function saveData() {
+        try {
+            console.log("💾 Guardando datos en localStorage...");
+            
+            const dataToStore = { 
+                workers: appState.workers, 
+                attendance: appState.attendance 
+            };
+            
+            localStorage.setItem(DATA_KEY, JSON.stringify(dataToStore));
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(appState.deletedWorkers));
+            
+            updateBackupStats();
+            
+            console.log("✅ Datos guardados exitosamente");
+            
+        } catch (e) {
+            console.error("❌ Error al guardar datos:", e);
+            alert('❌ Error al guardar datos. Intente nuevamente.');
+        }
+    }
+
+    // Función mejorada para guardar automáticamente
+    function autoSave() {
+        console.log("🔄 Guardado automático...");
+        saveData();
+        // También intentar guardar en SQLite si está configurado
+        if (db) {
+            try {
+                saveDatabase();
+                console.log("✅ Datos sincronizados con SQLite");
+            } catch (error) {
+                console.error("❌ Error al sincronizar con SQLite:", error);
+            }
+        }
+    }
+
+    // --- Login y UI General MEJORADAS ---
+    function togglePasswordVisibility(id) {
+        const input = document.getElementById(id);
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function handleLogin() {
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
+        const messageEl = document.getElementById('login-message');
+
+        if (user === USERNAME && pass === PASSWORD) {
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            
+            // CARGAR DATOS AL INICIAR SESIÓN (CORRECCIÓN PRINCIPAL)
+            loadData();
+            loadSettings();
+            initializeDatabase(); // Inicializar SQLite
+            
+            // Mostrar mensaje de bienvenida con información de datos cargados
+            const totalWorkers = Object.keys(appState.workers).length;
+            if (totalWorkers > 0) {
+                setTimeout(() => {
+                    showSyncStatus(`✅ Sesión iniciada. ${totalWorkers} trabajadores cargados.`, 'success');
+                }, 500);
+            } else {
+                showSyncStatus('✅ Sesión iniciada. No hay trabajadores registrados.', 'info');
+            }
+        } else {
+            messageEl.textContent = '❌ Usuario o contraseña incorrectos.';
+            document.getElementById('password').value = '';
+        }
+    }
+    
+    function logout() {
+        // Guardar datos antes de cerrar sesión
+        autoSave();
+        
+        // Detener el escáner si está activo
+        stopQRScanner();
+        
+        // Ocultar la aplicación y mostrar el login
+        document.getElementById('login-view').style.display = 'flex';
+        document.getElementById('app-container').style.display = 'none';
+        // Limpiar campos de login
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+    }
+
+    function showTab(id, button) {
+        // Detener el escáner QR si cambiamos de pestaña
+        if (id !== 'asistencia') {
+            stopQRScanner();
+        }
+        
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        button.classList.add('active');
+        document.getElementById(id).classList.add('active');
+        
+        // Actualizar estadísticas de backup si es la pestaña de backup
+        if (id === 'backup') {
+            updateBackupStats();
+        }
+    }
+    
+    function toggleForm(id) {
+        const f = document.getElementById(id);
+        f.style.display = f.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    function getCleanID(rut) {
+        // Usa el RUT limpio como ID único
+        return rut.toUpperCase().replace(/\./g, "").replace("-", "").trim();
+    }
+    
+    function refreshUILists() {
+        refreshWorkerOptions(appState.workers, document.getElementById("selectWorkerManual"));
+        // Trabajadores activos: incluye botones de descarga y eliminar
+        refreshWorkerButtons(appState.workers, document.getElementById("workerButtons"), showRecords, false); 
+        // Historial: incluye solo botón de eliminar
+        refreshWorkerButtons(appState.deletedWorkers, document.getElementById("historicalButtons"), showHistoricalRecords, true);
+    }
+
+    function refreshWorkerOptions(data, selectElement) {
+        selectElement.innerHTML = '<option value="">-- Seleccionar Trabajador --</option>';
+        const workerList = Object.values(data).map(item => item.worker || item);
+        const sortedWorkers = workerList.sort((a, b) => (a.name).localeCompare(b.name));
+        
+        sortedWorkers.forEach(worker => {
+            const id = getCleanID(worker.rut);
+            const opt = document.createElement("option");
+            opt.value = id;
+            opt.textContent = `${worker.name} (${worker.rut})`; 
+            selectElement.appendChild(opt);
+        });
+    }
+
+    // --- 1. Registrar Trabajador MEJORADO ---
+    function registerWorker() {
+        const name = document.getElementById("workerName").value.trim();
+        const rut = document.getElementById("workerRUT").value.trim();
+        const role = document.getElementById("workerRole").value.trim();
+        const date = document.getElementById("workerDate").value.trim();
+        const id = getCleanID(rut);
+
+        if (!name || !rut || !role || !date) return alert("❌ Por favor, complete todos los campos de registro.");
+        if (appState.workers[id]) return alert(`❌ Error: El RUT ${rut} ya está registrado.`);
+        
+        appState.workers[id] = { name, rut, role, date };
+        appState.attendance[id] = {};
+        
+        // GUARDAR AUTOMÁTICAMENTE DESPUÉS DE REGISTRAR
+        autoSave();
+        
+        // 1. Mostrar tarjeta en la vista de registro (Temporal)
+        document.getElementById("qr-output").innerHTML = generateQRCardHTML(id, name, rut, true);
+        // Renderiza el QR en el canvas temporal
+        renderQR(id, document.getElementById(`qr-canvas-${id}`));
+
+        // 2. Limpiar formulario
+        document.getElementById("workerName").value = '';
+        document.getElementById("workerRUT").value = '';
+        document.getElementById("workerRole").value = '';
+        document.getElementById("workerDate").value = '';
+
+        // 3. Actualizar listas y pestaña de tarjetas
+        refreshUILists();
+        renderAllQRCard(); // Vuelve a renderizar todas las tarjetas
+
+        alert(`✅ Trabajador ${name} registrado. Imprima o guarde la tarjeta QR temporal.`);
+    }
+
+    // --- Generación de Tarjetas QR ---
+    function renderQR(data, canvasElement) {
+        if (!window.QRious || !canvasElement) return;
+        
+        new QRious({
+            element: canvasElement,
+            value: data,
+            size: 100,
+            padding: 8,
+            foreground: '#000',
+            background: '#FFF'
+        });
+    }
+    
+    function downloadAndClear(id) {
+        const cardEl = document.getElementById(`qr-card-${id}`);
+        const canvasEl = document.getElementById(`qr-canvas-${id}`);
+
+        if (!cardEl || !canvasEl) return;
+        
+        const name = cardEl.getAttribute('data-name');
+        const rut = cardEl.getAttribute('data-rut');
+        
+        // 1. Descargar la imagen del QR (Canvas a PNG)
+        const imageUrl = canvasEl.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = `QR_CLBL_${id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // 2. Limpiar la tarjeta de la sección de registro (solo de la sección #qr-output)
+        document.getElementById('qr-output').innerHTML = '';
+        alert(`✅ Tarjeta QR para ${name} descargada (Imagen PNG) y eliminada de la vista de registro.`);
+    }
+
+    function generateQRCardHTML(id, name, rut, isTemporary = false) {
+        let buttonHtml = ``;
+        let cardId = `qr-card-display-${id}`; 
+        let canvasId = `qr-canvas-display-${id}`;
+        
+        if (isTemporary) {
+            buttonHtml = `<button style="width: 100%;" onclick="downloadAndClear('${id}')">⬇️ Descargar PNG y Limpiar</button>`;
+            cardId = `qr-card-${id}`;
+            canvasId = `qr-canvas-${id}`;
+        } else {
+            buttonHtml = `<button style="width: 100%;" onclick="downloadQRImage('${id}')">⬇️ Descargar QR (PNG)</button>`;
+        }
+        
+        return `
+          <div class="qr-card" id="${cardId}" data-name="${name}" data-rut="${rut}">
+            <div>
+              <strong>${name}</strong>
+              <small>RUT: ${rut}</small>
+            </div>
+            <div class="qr-visual">
+              <canvas id="${canvasId}"></canvas> 
+            </div>
+            <p style="font-size: 0.8em; color: #aaa; margin-bottom: 10px;">ID Único: ${id}</p>
+            ${buttonHtml}
+          </div>`;
+    }
+    
+    function downloadQRImage(id) {
+        const canvasEl = document.getElementById(`qr-canvas-display-${id}`);
+        if (!canvasEl) return;
+        
+        const imageUrl = canvasEl.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = `QR_CLBL_${id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function renderAllQRCard() {
+        const container = document.getElementById("cardContainer");
+        container.innerHTML = '';
+        
+        const sortedWorkers = Object.values(appState.workers).sort((a, b) => a.name.localeCompare(b.name));
+        
+        if (sortedWorkers.length === 0) {
+            container.innerHTML = '<p style="color: #aaa;">No hay trabajadores registrados.</p>';
+            return;
+        }
+        
+        sortedWorkers.forEach(worker => {
+            const id = getCleanID(worker.rut);
+            container.innerHTML += generateQRCardHTML(id, worker.name, worker.rut);
+            setTimeout(() => {
+                renderQR(id, document.getElementById(`qr-canvas-display-${id}`));
+            }, 0);
+        });
+    }
+
+    // --- 2. Asistencia (Manual y QR con Cámara) MEJORADA ---
+    function registerAttendanceManual() {
+        const workerId = document.getElementById("selectWorkerManual").value;
+        const eventType = document.getElementById("eventType").value;
+        const messageEl = document.getElementById('manual-message');
+
+        if (!workerId) {
+            messageEl.textContent = '🚫 Por favor, seleccione un trabajador.';
+            return;
+        }
+
+        registerAttendance(workerId, eventType, messageEl);
+    }
+    
+    // --- Escáner QR Mejorado ---
+    async function startQRScanner() {
+        if (!settings.selectedEventType) {
+            alert('⚠️ Por favor, seleccione primero el tipo de registro (Entrada, Salida, etc.)');
+            return;
+        }
+
+        const video = document.getElementById('qr-video');
+        const videoContainer = document.getElementById('qr-video-container');
+        const statusEl = document.getElementById('qr-status');
+        const startBtn = document.getElementById('start-scanner-btn');
+        const stopBtn = document.getElementById('stop-scanner-btn');
+        const messageEl = document.getElementById('qr-message');
+        
+        try {
+            qrVideoStream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: "environment",
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                } 
+            });
+            
+            video.srcObject = qrVideoStream;
+            video.setAttribute("playsinline", true);
+            await video.play();
+            
+            videoContainer.style.display = 'block';
+            statusEl.style.display = 'block';
+            statusEl.textContent = 'Escaneando...';
+            statusEl.className = 'qr-status-scanning';
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+            
+            qrScannerActive = true;
+            messageEl.textContent = `Escaneando para: ${document.getElementById('current-event').textContent}`;
+            
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            qrScanningInterval = setInterval(() => {
+                if (!qrScannerActive) return;
+                
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    
+                    if (code) {
+                        const workerId = code.data.trim();
+                        handleScannedQR(workerId, statusEl, messageEl);
+                    }
+                }
+            }, 100);
+            
+        } catch (error) {
+            console.error("Error al acceder a la cámara:", error);
+            messageEl.textContent = '❌ Error: No se pudo acceder a la cámara. Asegúrese de haber dado los permisos necesarios.';
+            stopQRScanner();
+        }
+    }
+
+    function stopQRScanner() {
+        qrScannerActive = false;
+        
+        if (qrScanningInterval) {
+            clearInterval(qrScanningInterval);
+            qrScanningInterval = null;
+        }
+        
+        if (qrVideoStream) {
+            qrVideoStream.getTracks().forEach(track => track.stop());
+            qrVideoStream = null;
+        }
+        
+        const video = document.getElementById('qr-video');
+        video.srcObject = null;
+        
+        document.getElementById('qr-video-container').style.display = 'none';
+        document.getElementById('qr-status').style.display = 'none';
+        document.getElementById('start-scanner-btn').style.display = 'inline-block';
+        document.getElementById('stop-scanner-btn').style.display = 'none';
+        document.getElementById('qr-message').textContent = '';
+    }
+
+    function handleScannedQR(workerId, statusEl, messageEl) {
+        if (!appState.workers[workerId]) {
+            statusEl.textContent = '❌ QR no reconocido';
+            statusEl.className = 'qr-status-error';
+            messageEl.textContent = '❌ Código QR no válido. Asegúrese de que el trabajador esté registrado.';
+            
+            setTimeout(() => {
+                if (qrScannerActive) {
+                    statusEl.textContent = 'Escaneando...';
+                    statusEl.className = 'qr-status-scanning';
+                    messageEl.textContent = `Escaneando para: ${document.getElementById('current-event').textContent}`;
+                }
+            }, 2000);
+            return;
+        }
+        
+        // QR válido - registrar asistencia
+        statusEl.textContent = '✅ QR reconocido';
+        statusEl.className = 'qr-status-success';
+        
+        registerAttendance(workerId, settings.selectedEventType, messageEl);
+        
+        setTimeout(() => {
+            if (qrScannerActive) {
+                statusEl.textContent = 'Escaneando...';
+                statusEl.className = 'qr-status-scanning';
+                messageEl.textContent = `Escaneando para: ${document.getElementById('current-event').textContent}`;
+            }
+        }, 2000);
+    }
+
+    function registerAttendance(workerId, type = null, messageEl) {
+        const workerName = appState.workers[workerId].name;
+        const now = new Date();
+        const date = now.toISOString().split("T")[0]; 
+        const time = now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        
+        if (!appState.attendance[workerId]) appState.attendance[workerId] = {};
+        if (!appState.attendance[workerId][date]) appState.attendance[workerId][date] = {};
+
+        const todayRecords = appState.attendance[workerId][date];
+
+        if (type === null) {
+            if (!todayRecords['entrada']) {
+                type = 'entrada';
+            } else if (!todayRecords['salida_colacion']) {
+                type = 'salida_colacion';
+            } else if (!todayRecords['entrada_colacion']) {
+                type = 'entrada_colacion';
+            } else if (!todayRecords['salida']) {
+                type = 'salida';
+            } else {
+                 messageEl.textContent = `⚠️ Todas las asistencias de hoy para ${workerName} ya están registradas.`;
+                 return;
+            }
+        }
+        
+        appState.attendance[workerId][date][type] = time;
+        
+        if (type === 'salida') {
+            const total = calculateTotalHours(todayRecords);
+            appState.attendance[workerId][date]['total_hours'] = total;
+            messageEl.textContent = `✅ Asistencia para ${workerName} registrada. Total Horas: ${total}.`;
+        } else {
+            delete appState.attendance[workerId][date]['total_hours']; 
+            messageEl.textContent = `✅ Asistencia para ${workerName} registrada como ${type.toUpperCase().replace('_', ' ')} a las ${time}.`;
+        }
+
+        // GUARDAR AUTOMÁTICAMENTE DESPUÉS DE REGISTRAR ASISTENCIA
+        autoSave();
+    }
+
+    // --- CÁLCULO DE HORAS TRABAJADAS ---
+    function timeToMinutes(timeStr) {
+        if (!timeStr || timeStr === '-') return 0;
+        const parts = timeStr.split(':');
+        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    }
+
+    function calculateTotalHours(records) {
+        const entry = records.entrada;
+        const exit = records.salida;
+        const colationOut = records.salida_colacion;
+        const colationIn = records.entrada_colacion;
+
+        if (!entry || !exit) return '-';
+
+        let totalMinutes = 0;
+        let workDuration = 0;
+        let colationDuration = 0;
+        
+        const entryMin = timeToMinutes(entry);
+        const exitMin = timeToMinutes(exit);
+        
+        if (exitMin > entryMin) {
+            workDuration = exitMin - entryMin;
+        } else {
+            workDuration = (1440 - entryMin) + exitMin;
+        }
+        
+        const colOutMin = timeToMinutes(colationOut);
+        const colInMin = timeToMinutes(colationIn);
+        
+        if (colationOut && colationIn && colInMin > colOutMin) {
+            colationDuration = colInMin - colOutMin;
+        }
+
+        totalMinutes = workDuration - colationDuration;
+        
+        if (totalMinutes < 0) return 'Error';
+
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        
+        return `${hours}:${String(minutes).padStart(2, '0')}`;
+    }
+
+    // --- Funciones de Visualización, Edición y Gestión de Registros MEJORADAS ---
+    function editRecord(workerId, date, type) {
+        if (appState.deletedWorkers[workerId] && appState.deletedWorkers[workerId].attendance[date]) return; 
+
+        const worker = appState.workers[workerId];
+        if (!worker) return;
+
+        const records = appState.attendance[workerId][date];
+        const currentHour = records[type] || 'VACÍA';
+        const eventLabel = type.replace('_', ' ').toUpperCase();
+
+        const newHour = prompt(
+            `Corregir ${eventLabel} para ${worker.name} el ${date}.\n\nHora actual: ${currentHour}\n\nIngrese la nueva hora (HH:MM) o déjelo vacío y presione 'Aceptar' para borrar el registro.`
+        );
+
+        if (newHour === null) {
+            return;
+        }
+
+        const cleanedHour = newHour.trim();
+
+        if (cleanedHour === "") {
+            delete records[type];
+            alert(`✅ Registro de ${eventLabel} para ${worker.name} en ${date} ha sido borrado.`);
+
+        } else if (/^\d{1,2}:\d{2}$/.test(cleanedHour)) {
+            records[type] = cleanedHour.padStart(5, '0');
+            alert(`✅ Registro de ${eventLabel} para ${worker.name} en ${date} actualizado a ${records[type]}.`);
+        } else {
+            alert("❌ Formato de hora no válido. Por favor use HH:MM (Ej: 08:30) o déjelo vacío para borrar.");
+            return;
+        }
+        
+        if (type === 'entrada' || type === 'salida' || type.includes('colacion')) {
+            const total = calculateTotalHours(records);
+            if (total === '-') {
+                delete records['total_hours'];
+            } else {
+                records['total_hours'] = total;
+            }
+        }
+        
+        // GUARDAR AUTOMÁTICAMENTE DESPUÉS DE EDITAR
+        autoSave();
+        renderAttendanceTable(workerId, false); 
+    }
+
+    function showHistoricalRecords(id) {
+        appState.currentSelectedId = id;
+        renderAttendanceTable(id, true);
+    }
+    
+    // --- Funciones de Eliminación MEJORADAS ---
+    function promptDeleteWorker(workerId) {
+        const worker = appState.workers[workerId];
+        if (!worker) return alert("Error: Trabajador no encontrado.");
+        
+        const confirmation = prompt(`⚠️ Escriba "ELIMINAR ${worker.name}" para confirmar la eliminación de ${worker.name} y moverlo al historial con sus registros.`);
+        
+        if (confirmation === `ELIMINAR ${worker.name}`) {
+            appState.deletedWorkers[workerId] = {
+                worker: worker,
+                attendance: appState.attendance[workerId] || {},
+                deletedDate: new Date().toISOString().split("T")[0]
+            };
+            
+            delete appState.workers[workerId];
+            delete appState.attendance[workerId];
+            appState.currentSelectedId = null;
+
+            // GUARDAR AUTOMÁTICAMENTE DESPUÉS DE ELIMINAR
+            autoSave();
+            refreshUILists();
+            renderAllQRCard();
+            
+            document.getElementById('recordsTitle').textContent = 'Registro Detallado (Seleccione un trabajador)';
+            document.getElementById('recordTableContainer').innerHTML = '';
+
+            alert(`✅ Trabajador ${worker.name} eliminado y movido al historial.`);
+        } else if (confirmation !== null) {
+            alert("❌ Confirmación incorrecta. Eliminación cancelada.");
+        }
+    }
+    
+    function promptDeleteHistoricalRecord(workerId, workerName) {
+        const confirmation = prompt(`⚠️ Escriba "BORRAR HISTORIAL ${workerName}" para confirmar la eliminación PERMANENTE del registro histórico de este trabajador.`);
+        
+        if (confirmation === `BORRAR HISTORIAL ${workerName}`) {
+            delete appState.deletedWorkers[workerId];
+            appState.currentSelectedId = null;
+
+            // GUARDAR AUTOMÁTICAMENTE DESPUÉS DE ELIMINAR
+            autoSave();
+            refreshUILists();
+            
+            document.getElementById('historicalRecordsTitle').textContent = 'Registro Histórico Detallado';
+            document.getElementById('historicalRecordTableContainer').innerHTML = '';
+
+            alert(`✅ Registro histórico de ${workerName} eliminado permanentemente.`);
+        } else if (confirmation !== null) {
+            alert("❌ Confirmación incorrecta. Eliminación cancelada.");
+        }
+    }
+    
+    // --- Funcionalidad de Exportación CSV ---
+    function exportCSV(workerId, period) {
+        const worker = appState.workers[workerId];
+        if (!worker) {
+            alert("🚫 Error: Trabajador no encontrado.");
+            return;
+        }
+        
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Fecha;Entrada;Salida_Colacion;Retorno_Colacion;Salida;Total_Horas\n";
+        
+        const attendanceRecords = appState.attendance[workerId] || {};
+        const dates = Object.keys(attendanceRecords).sort();
+        
+        if (dates.length === 0) {
+             alert(`No hay registros de asistencia para ${worker.name} en el periodo ${period.toUpperCase()}.`);
+             return;
+        }
+        
+        const recordsToExport = dates.slice(-3); 
+        
+        recordsToExport.forEach(date => {
+            const rec = attendanceRecords[date];
+            const totalHours = rec.total_hours || 'N/A'; 
+            csvContent += `${date};${rec.entrada || ''};${rec.salida_colacion || ''};${rec.entrada_colacion || ''};${rec.salida || ''};${totalHours}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `CLBL_Registro_${worker.name.replace(/\s/g, '_')}_${period.toUpperCase()}_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click(); 
+        document.body.removeChild(link);
+        
+        alert(`✅ CSV (${period.toUpperCase()}) para ${worker.name} generado y descargado.`);
+    }
+
+    function clearAllRecords() {
+        const confirmation = prompt(`⚠️ ¡ADVERTENCIA! Esta acción eliminará TODOS los trabajadores, asistencias e historial guardados. Escriba "BORRAR TODO" para confirmar.`);
+
+        if (confirmation === "BORRAR TODO") {
+            localStorage.removeItem(DATA_KEY);
+            localStorage.removeItem(HISTORY_KEY);
+            localStorage.removeItem('clbl_sqlite_db');
+            
+            appState = {
+                workers: {},
+                attendance: {},
+                deletedWorkers: {},
+                currentSelectedId: null,
+            };
+            
+            // Reiniciar base de datos
+            if (db) {
+                db.close();
+                db = null;
+            }
+            initializeDatabase();
+            
+            refreshUILists();
+            renderAllQRCard();
+            
+            document.getElementById('recordsTitle').textContent = 'Registro Detallado (Seleccione un trabajador)';
+            document.getElementById('recordTableContainer').innerHTML = '';
+            document.getElementById('historicalRecordsTitle').textContent = 'Registro Histórico Detallado';
+            document.getElementById('historicalRecordTableContainer').innerHTML = '';
+            document.getElementById('qr-output').innerHTML = '';
+            
+            alert("✅ Todos los registros de trabajadores y asistencia han sido eliminados permanentemente.");
+        } else if (confirmation !== null) {
+            alert("❌ Confirmación incorrecta. El borrado fue cancelado.");
+        }
+    }
+    
+    // --- INICIALIZACIÓN MEJORADA ---
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("🚀 Inicializando aplicación...");
+        loadSettings();
+        
+        // Configurar guardado automático antes de cerrar la ventana
+        window.addEventListener('beforeunload', function() {
+            console.log("💾 Guardando datos antes de cerrar...");
+            autoSave();
+        });
+        
+        // Configurar guardado automático periódico (cada 30 segundos)
+        setInterval(autoSave, 30000);
+        
+        console.log("✅ Aplicación inicializada correctamente");
+    });
+
+</script>
+</body>
+</html>
